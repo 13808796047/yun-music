@@ -1,5 +1,6 @@
 package com.summer.yunmusic.mapper;
 
+import com.summer.yunmusic.dto.UserCreateDto;
 import com.summer.yunmusic.dto.UserDto;
 import com.summer.yunmusic.entity.User;
 import com.summer.yunmusic.vo.UserVo;
@@ -18,4 +19,8 @@ public interface UserMapper {
 
     // dto转换为vo
     UserVo toVo(UserDto userDto);
+
+    // 转换为实体
+    User createEntity(UserCreateDto userCreateDto);
+
 }

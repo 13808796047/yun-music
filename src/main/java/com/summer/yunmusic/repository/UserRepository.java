@@ -4,6 +4,8 @@ import com.summer.yunmusic.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 /**
  * @author Summer
  * @since 2022/4/17 13:38
@@ -12,4 +14,6 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, String> {
 
     User getByUsername(String username);
+
+    Optional<User> findByUsername(String username);
 }

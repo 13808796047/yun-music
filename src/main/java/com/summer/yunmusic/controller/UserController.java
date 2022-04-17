@@ -1,12 +1,11 @@
 package com.summer.yunmusic.controller;
 
+import com.summer.yunmusic.dto.UserCreateDto;
 import com.summer.yunmusic.mapper.UserMapper;
 import com.summer.yunmusic.service.UserService;
 import com.summer.yunmusic.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +29,11 @@ public class UserController {
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping
+    UserVo create(@RequestBody UserCreateDto userCreateDto) {
+        return userMapper.toVo(userService.create(userCreateDto));
     }
 
     @GetMapping
