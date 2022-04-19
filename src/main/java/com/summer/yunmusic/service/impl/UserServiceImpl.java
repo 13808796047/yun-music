@@ -2,26 +2,29 @@ package com.summer.yunmusic.service.impl;
 
 import com.summer.yunmusic.dto.UserCreateDto;
 import com.summer.yunmusic.dto.UserDto;
+import com.summer.yunmusic.dto.UserUpdateDto;
 import com.summer.yunmusic.entity.User;
 import com.summer.yunmusic.exception.BizException;
 import com.summer.yunmusic.exception.ExceptionEnum;
 import com.summer.yunmusic.mapper.UserMapper;
 import com.summer.yunmusic.repository.UserRepository;
 import com.summer.yunmusic.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Summer
  * @since 2022/4/17 14:57
  */
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
@@ -49,13 +52,6 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public List<UserDto> list() {
-        return userRepository.findAll()
-                .stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public UserDto create(UserCreateDto userCreateDto) {
@@ -70,10 +66,43 @@ public class UserServiceImpl implements UserService {
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
-        if (user.isPresent()) {
+        if (!user.isPresent()) {
             throw new BizException(ExceptionEnum.USER_NOT_FOUND);
         }
+//        log.info("查到数据{}",user.get());
         return user.get();
+    }
+
+    @Override
+    public UserDto get(String id) {
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isPresent()) {
+            throw new BizException(ExceptionEnum.USER_NOT_FOUND);
+        }
+        return userMapper.toDto(user.get());
+    }
+
+    @Override
+    public UserDto update(String id, UserUpdateDto userUpdateDto) {
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isPresent()) {
+            throw new BizException(ExceptionEnum.USER_NOT_FOUND);
+        }
+        return userMapper.toDto(userRepository.save(userMapper.updateEntity(user.get(), userUpdateDto)));
+    }
+
+    @Override
+    public void delete(String id) {
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isPresent()) {
+            throw new BizException(ExceptionEnum.USER_NOT_FOUND);
+        }
+        userRepository.delete(user.get());
+    }
+
+    @Override
+    public Page<UserDto> search(Pageable pageable) {
+        return userRepository.findAll(pageable).map(userMapper::toDto);
     }
 
     private void checkUserName(String username) {

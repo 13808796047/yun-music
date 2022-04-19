@@ -1,8 +1,9 @@
 package com.summer.yunmusic.dto;
 
-import com.summer.yunmusic.vo.RoleVo;
+import com.summer.yunmusic.enums.Gender;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,10 +13,14 @@ import java.util.List;
 @Data
 public class UserDto {
     private String id;
-    
+
     private String username;
 
     private String nickname;
-
-    private List<RoleVo> roles;
+    private List<RoleDto> roles;
+    private Gender gender;
+    private Boolean locked = false;
+    private Boolean enabled = true;
+    private String lastLoginIp;
+    private Date lastLoginTime;
 }

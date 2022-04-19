@@ -2,9 +2,11 @@ package com.summer.yunmusic.mapper;
 
 import com.summer.yunmusic.dto.UserCreateDto;
 import com.summer.yunmusic.dto.UserDto;
+import com.summer.yunmusic.dto.UserUpdateDto;
 import com.summer.yunmusic.entity.User;
 import com.summer.yunmusic.vo.UserVo;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,5 +24,7 @@ public interface UserMapper {
 
     // 转换为实体
     User createEntity(UserCreateDto userCreateDto);
+
+    User updateEntity(@MappingTarget User user, UserUpdateDto userUpdateDto);
 
 }
