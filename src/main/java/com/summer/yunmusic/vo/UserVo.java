@@ -1,5 +1,6 @@
 package com.summer.yunmusic.vo;
 
+import com.summer.yunmusic.enums.Gender;
 import lombok.Data;
 
 import java.util.List;
@@ -15,5 +16,8 @@ public class UserVo {
 
     private String nickname;
 
+    private Gender gender;
+    private Boolean locked;
+    private Boolean enabled;
     private List<RoleVo> roles;
 }

@@ -1,5 +1,9 @@
 package com.summer.yunmusic.service.impl;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.summer.yunmusic.config.SecurityConfig;
+import com.summer.yunmusic.dto.AuthorizationDto;
 import com.summer.yunmusic.dto.UserCreateDto;
 import com.summer.yunmusic.dto.UserDto;
 import com.summer.yunmusic.dto.UserUpdateDto;
@@ -13,10 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -105,11 +112,39 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(pageable).map(userMapper::toDto);
     }
 
+    @Override
+    public String store(AuthorizationDto authorizationDto) {
+        User user = loadUserByUsername(authorizationDto.getUsername());
+        if (!passwordEncoder.matches(authorizationDto.getPassword(), user.getPassword())) {
+            throw new BizException(ExceptionEnum.USER_PASSWORD_NOT_MATCH);
+        }
+        if (!user.isEnabled()) {
+            throw new BizException(ExceptionEnum.USER_NOT_ENABLED);
+        }
+//        log.info("user.getLocked(){}", user.isAccountNonLocked());
+        if (user.isAccountNonLocked()) {
+            throw new BizException(ExceptionEnum.USER_LOCKED);
+        }
+
+        return JWT.create()
+                .withSubject(user.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConfig.EXPIRATION_TIME))
+                .sign(Algorithm.HMAC512(SecurityConfig.SECRET.getBytes()));
+    }
+
+    @Override
+    public UserDto getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = loadUserByUsername(authentication.getName());
+
+        return userMapper.toDto(user);
+    }
+
     private void checkUserName(String username) {
 
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
-            throw new BizException(ExceptionEnum.USER_NAMEDUPLICATE);
+            throw new BizException(ExceptionEnum.USER_NAME_DUPLICATE);
         }
     }
 }

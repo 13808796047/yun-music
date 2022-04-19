@@ -2,7 +2,6 @@ package com.summer.yunmusic.entity;
 
 import com.summer.yunmusic.enums.Gender;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,7 +14,6 @@ import java.util.List;
  * @author Summer
  * @since 2022/4/17 12:51
  */
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 public class User extends AbstractEntity implements UserDetails {
@@ -42,6 +40,7 @@ public class User extends AbstractEntity implements UserDetails {
     private String lastLoginIp;
     private Date lastLoginTime;
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
@@ -54,7 +53,7 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return getLocked();
+        return this.getLocked();
     }
 
     @Override
@@ -64,6 +63,6 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return getEnabled();
+        return this.getEnabled();
     }
 }

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
+ * 验证过滤器
  * 这个类扩展了UsernamePasswordAuthenticationFilter，它是 Spring Security 中密码认证的默认类。我们对其进行扩展以定义我们的自定义身份验证逻辑。
  * 我们覆盖了UsernameAuthenticationFilter类的尝试认证和成功认证方法。
  * <p>
@@ -54,6 +55,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         try {
             User user = new ObjectMapper()
                     .readValue(request.getInputStream(), User.class);
+//            log.info("用户是{}", user);
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             user.getUsername(),
@@ -68,6 +70,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        log.info("create token");
         String token = JWT.create()
                 .withSubject(((User) authResult.getPrincipal()).getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConfig.EXPIRATION_TIME))

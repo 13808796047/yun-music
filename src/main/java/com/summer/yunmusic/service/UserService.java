@@ -1,5 +1,6 @@
 package com.summer.yunmusic.service;
 
+import com.summer.yunmusic.dto.AuthorizationDto;
 import com.summer.yunmusic.dto.UserCreateDto;
 import com.summer.yunmusic.dto.UserDto;
 import com.summer.yunmusic.dto.UserUpdateDto;
@@ -28,4 +29,8 @@ public interface UserService extends UserDetailsService {
     void delete(String id);
 
     Page<UserDto> search(Pageable pageable);
+
+    String store(AuthorizationDto authorizationDto);
+
+    UserDto getCurrentUser();
 }
