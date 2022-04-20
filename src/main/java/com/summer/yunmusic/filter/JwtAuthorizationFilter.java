@@ -3,6 +3,8 @@ package com.summer.yunmusic.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.summer.yunmusic.config.SecurityConfig;
+import com.summer.yunmusic.entity.User;
+import com.summer.yunmusic.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * doFilterInternal方法拦截请求然后检查 Authorization 标头。如果标头不存在或不以“BEARER”开头，则进入过滤器链。
@@ -29,8 +30,11 @@ import java.util.ArrayList;
  */
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
+    UserService userService;
+
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserService userService) {
         super(authenticationManager);
+        this.userService = userService;
     }
 
     @Override
@@ -54,11 +58,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     .verify(header.replace(SecurityConfig.TOKEN_PREFIX, ""))
                     .getSubject();
             if (username != null) {
-                return new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+                // 获取用户权限
+                User user = userService.loadUserByUsername(username);
+                return new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
             }
         }
         return null;
     }
-
-
 }

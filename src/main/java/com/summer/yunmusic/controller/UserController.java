@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class UserController {
 
     @PostMapping
     @ApiOperation("新增用户")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     UserVo create(@Validated @RequestBody UserCreateDto userCreateDto) {
         return userMapper.toVo(userService.create(userCreateDto));
     }
@@ -41,6 +43,7 @@ public class UserController {
 
     @GetMapping
     @ApiOperation("用户列表")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     Page<UserVo> search(@PageableDefault(sort = {"createdTime"}, direction = Sort.Direction.ASC) Pageable pageable) {
         return userService.search(pageable)
                 .map(userMapper::toVo);
@@ -55,6 +58,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @ApiOperation("更新用户")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     UserVo update(@PathVariable String id,
                   @Validated @RequestBody UserUpdateDto userUpdateDto) {
         return userMapper.toVo(userService.update(id, userUpdateDto));
@@ -62,6 +66,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @ApiOperation("删除用户")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     void delete(@PathVariable String id) {
         userService.delete(id);
     }
